@@ -1,0 +1,18 @@
+#!/bin/sh
+
+main() {
+# DUMP-environment
+   export > /env
+   trap onterm SIGTERM SIGINT
+   
+   echo "Staring runit"
+   /sbin/runsvdir-start &
+   wait "$!"
+}
+onterm() {
+  echo "Exiting..."
+  pkill -SIGHUP runsvdir-start
+  exit $?
+}
+
+main "$@"
