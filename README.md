@@ -98,7 +98,7 @@ services:
   app:
     image: dockerstacks/apache2_php:v{PHP Version}
     volumes:
-      - .:/var/www/localhost/htdocs
+      - .:/var/www/
     ports:
       - mode: host
         target: 80
