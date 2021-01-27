@@ -1,0 +1,67 @@
+#User defined
+user:
+  php_version:
+    label:
+      PHP version
+    hint:
+      Select a PHP version from the list above
+    type:
+      select
+    values:
+      - 5.6
+      - 7.0
+      - 7.1
+      - 7.2
+      - 7.3
+      - 7.4
+    target:
+      PHP_VERSION
+
+  install_xdebug:
+    label:
+      Install XDEBUG?
+    type:
+      checkbox
+    hint:
+      Check to enable XDEBUG installation
+    target:
+      INSTALL_XDEBUG
+  # mysql_version:
+  #   label:
+  #     MySQL version
+  #   hint:
+  #     Select MySQL version
+  #   type:
+  #     select
+  #   values:
+  #     - "5.0"
+  #     - "7.0"
+  #   target:
+  #     MYSQL_VERSION
+
+  customize_server_root_path:
+    label:
+      Server root
+    type:
+      input
+    values:
+      /var/www
+    hint:
+      Server document root
+    target:
+      DOCUMENT_ROOT
+
+#System defaults
+system:
+  show_localpath_selector:
+    true
+  #For collecting and storing DB in .env
+  #db/user/password
+  db_credentials:
+    true
+  #Generate public ports for the docker image
+  ports:
+    http:
+      SERVER_PORT
+    others:
+
