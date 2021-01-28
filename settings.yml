@@ -58,7 +58,7 @@ system:
   #For collecting and storing DB in .env
   #db/user/password
   db_credentials:
-    true
+    false
   #Generate public ports for the docker image
   ports:
     http:
