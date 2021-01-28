@@ -1,6 +1,6 @@
 version: "3"
 services:
-  alpine_apache:
+  apache:
     build:
       context: "."
       dockerfile: "Dockerfile-${PHP_VERSION}"
