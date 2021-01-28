@@ -1,13 +1,14 @@
 #!/bin/sh
 
 main() {
-# DUMP-environment
-   export > /env
-   trap onterm SIGTERM SIGINT
-   
-   echo "Staring runit"
-   /sbin/runsvdir-start &
-   wait "$!"
+  # Dump environment
+  export > /env
+
+  trap onterm SIGTERM SIGINT
+
+  echo "Starting runit"
+  /sbin/runsvdir-start &
+  wait "$!"
 }
 onterm() {
   echo "Exiting..."
