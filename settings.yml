@@ -57,11 +57,11 @@ system:
     true
   #For collecting and storing DB in .env
   #db/user/password
-  db_credentials:
-    false
+  # db_credentials:
+  #   false
   #Generate public ports for the docker image
   ports:
     http:
-      SERVER_PORT
+      APACHE_HOST_HTTP_PORT
     others:
 
