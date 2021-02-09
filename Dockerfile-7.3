@@ -86,8 +86,17 @@ RUN sed -i "s#{SERVER_ROOT}#$SERVER_ROOT#g" /etc/apache2/httpd.conf
 VOLUME [ "/var/www/" ]
 WORKDIR /var/www
 COPY php_ini/php7.3.ini /etc/php/7.3/php.ini
+
 ARG DISPLAY_PHPERROR
-RUN sed -i "s#{DISPLAY_PHPERROR}#$DISPLAY_PHPERROR#g" /etc/php/7.3/php.ini
+ARG DISPLAY_O
+ARG DISPLAY_F
+RUN if [ ${DISPLAY_PHPERROR} = true ]; then \
+sed -i "s#{DISPLAY}#$DISPLAY_O#g" /etc/php/7.3/php.ini \
+;fi
+
+RUN if [ ${DISPLAY_PHPERROR} = false ]; then \
+sed -i "s#{DISPLAY}#$DISPLAY_F#g" /etc/php/7.3/php.ini \
+;fi
 
 RUN chmod +x /etc/service/apache/run
 RUN chmod +x /sbin/runit-wrapper

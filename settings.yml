@@ -21,10 +21,7 @@ user:
     label:
       Display Error Reporting?
     type:
-      select
-    values:
-      - On(For Development)
-      - Off(For Production)
+      Checkbox
     hint:
       Check to Enable or Disable "Display PHP error reporting?"
     target:
