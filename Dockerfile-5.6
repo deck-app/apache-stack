@@ -92,7 +92,8 @@ RUN mkdir -p /run/apache2
 
 COPY conf5.d/* /etc/apache2/conf.d/
 COPY php_ini/php5.6.ini /etc/php5/php.ini
-
+ARG DISPLAY_PHPERROR
+RUN sed -i "s#{DISPLAY_PHPERROR}#$DISPLAY_PHPERROR#g" /etc/php5/php.ini
 RUN rm -Rf /var/www/*
 
 ARG SERVER_ROOT

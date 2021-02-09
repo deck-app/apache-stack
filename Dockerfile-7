@@ -1,10 +1,28 @@
-ARG PHP_VERSION
-FROM deckapp/apache_php:v7
+FROM alpine:3.7
 
-LABEL maintainer="Naba Kumar Das <nabad600@gmail.com>"
+ARG BUILD_DATE
+ARG VCS_REF
 
-RUN apk update
-RUN apk add php7.0-bcmath \
+LABEL org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-url="https://github.com/phpearth/docker-php.git" \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.schema-version="1.0" \
+      org.label-schema.vendor="PHP.earth" \
+      org.label-schema.name="docker-php" \
+      org.label-schema.description="Docker For PHP Developers - Docker image with PHP 7.0, Apache, and Alpine" \
+      org.label-schema.url="https://github.com/phpearth/docker-php"
+
+# PHP_INI_DIR to be symmetrical with official php docker image
+ENV PHP_INI_DIR /etc/php/7.0
+
+# When using Composer, disable the warning about running commands as root/super user
+ENV COMPOSER_ALLOW_SUPERUSER=1
+
+# Persistent runtime dependencies
+ARG DEPS="\
+        php7.0 \
+        php7.0-phar \
+        php7.0-bcmath \
         php7.0-calendar \
         php7.0-mbstring \
         php7.0-exif \
@@ -32,17 +50,50 @@ RUN apk add php7.0-bcmath \
         php7.0-iconv \
         php7.0-json \
         php7.0-posix \
+        php7.0-apache2 \
+        php7.0-composer \
+        php7.0-pdo \
+        php7.0-mongodb \
+        php7.0-mysqli \
+        php7.0-mysqlnd \
         php7.0-composer \
         curl \
-	php7.0-pdo
+        ca-certificates \
+        runit \
+        apache2 \
+"
+
+# PHP.earth Alpine repository for better developer experience
+ADD https://repos.php.earth/alpine/phpearth.rsa.pub /etc/apk/keys/phpearth.rsa.pub
+
+RUN set -x \
+    && echo "https://repos.php.earth/alpine/v3.7" >> /etc/apk/repositories \
+    && apk add --no-cache $DEPS \
+    && mkdir -p /run/apache2 \
+    && ln -sf /dev/stdout /var/log/apache2/access.log \
+    && ln -sf /dev/stderr /var/log/apache2/error.log
+
+RUN apk update
+RUN apk add bash
+
+COPY apache/ /
 
 COPY httpd.conf /etc/apache2/httpd.conf
 ARG SERVER_ROOT
 
 RUN sed -i "s#{SERVER_ROOT}#$SERVER_ROOT#g" /etc/apache2/httpd.conf
+
 VOLUME [ "/var/www/" ]
 WORKDIR /var/www
 COPY php_ini/php7.0.ini /etc/php/7.0/php.ini
+ARG DISPLAY_PHPERROR
+RUN sed -i "s#{DISPLAY_PHPERROR}#$DISPLAY_PHPERROR#g" /etc/php/7.0/php.ini
+
+RUN chmod +x /etc/service/apache/run
+RUN chmod +x /sbin/runit-wrapper
+RUN chmod +x /sbin/runsvdir-start
+
+
+EXPOSE 80
 
 CMD ["/sbin/runit-wrapper"]
-EXPOSE 80
