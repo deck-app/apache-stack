@@ -17,7 +17,7 @@ user:
     target:
       PHP_VERSION
 
-  PHP error_reporting:
+  PHP_error_reporting:
     label:
       Check Display Error Reporting?
     type:
