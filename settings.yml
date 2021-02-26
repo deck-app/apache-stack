@@ -17,13 +17,12 @@ user:
     target:
       PHP_VERSION
 
-  PHP_error_reporting:
+  php_error_reporting:
     label:
-      Check Display Error Reporting?
+      Enable PHP error reporting?
     type:
-      Checkbox
-    hint:
-      Check to Enable or Disable "Display PHP error reporting?"
+      checkbox
+    hint: Check the box to display PHP errors 
     target:
       DISPLAY_PHPERROR
   # mysql_version:
@@ -47,9 +46,9 @@ user:
     values:
       /var/www
     hint:
-      Server document root
+      Server document root, make sure to append "/public" if you are going to install a framework like Laravel
     target:
-      DOCUMENT_ROOT
+      SERVER_ROOT
 
 #System defaults
 system:
@@ -58,10 +57,9 @@ system:
   #For collecting and storing DB in .env
   #db/user/password
   # db_credentials:
-  #   false
+  #   true
   #Generate public ports for the docker image
   ports:
     http:
       APACHE_HOST_HTTP_PORT
     others:
-
