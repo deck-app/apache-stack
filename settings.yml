@@ -62,4 +62,3 @@ system:
   ports:
     http:
       APACHE_HOST_HTTP_PORT
-    others:
