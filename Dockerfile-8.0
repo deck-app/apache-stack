@@ -57,9 +57,11 @@ ARG DEPS="\
         php8-posix \
         php8-apache2 \
         php8-pdo \
-        php8-mongodb \
         php8-mysqli \
         php8-mysqlnd \
+        php8-mongodb \
+        php8-dev \
+        php8-pear \
         curl \
         ca-certificates \
         runit \

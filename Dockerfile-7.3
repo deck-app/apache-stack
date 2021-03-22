@@ -53,9 +53,10 @@ ARG DEPS="\
         php7.3-posix \
         php7.3-apache2 \
         php7.3-pdo \
-        php7.3-mongodb \
+        php7.3-pear \
         php7.3-mysqli \
         php7.3-mysqlnd \
+        php7.3-dev \
         curl \
         ca-certificates \
         runit \
@@ -96,6 +97,16 @@ sed -i "s#{DISPLAY}#On#g" /etc/php/7.3/php.ini \
 ;else \
 sed -i "s#{DISPLAY}#Off#g" /etc/php/7.3/php.ini \
 ;fi
+
+ARG MONGODB_VERSION
+RUN if [ ${MONGODB_VERSION} = true ]; then \
+pecl install mongodb \
+&& echo "extension=mongodb.so" > /etc/php/7.3/conf.d/mongodb.ini \
+;else \
+apk add php7.3-mongodb \
+;fi
+
+
 
 RUN chmod +x /etc/service/apache/run
 RUN chmod +x /sbin/runit-wrapper
