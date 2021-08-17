@@ -1,4 +1,4 @@
-FROM alpine:3.7
+FROM --platform=linux/x86_64 alpine:3.7
 LABEL maintainer Naba Das <hello@get-deck.com>
 ARG BUILD_DATE
 ARG VCS_REF
@@ -98,13 +98,13 @@ sed -i "s#{DISPLAY}#Off#g" /etc/php/7.0/php.ini \
 ;fi
 
 #mongodb version update
-ARG MONGODB_VERSION
-RUN if [ ${MONGODB_VERSION} = true ]; then \
-pecl install mongodb \
-&& echo "extension=mongodb.so" > /etc/php/7.0/conf.d/mongodb.ini \
-;else \
-apk add php7.0-mongodb \
-;fi
+#ARG MONGODB_VERSION
+#RUN if [ ${MONGODB_VERSION} = true ]; then \
+#pecl install mongodb \
+#&& echo "extension=mongodb.so" > /etc/php/7.0/conf.d/mongodb.ini \
+#;else \
+#apk add php7.0-mongodb \
+#;fi
 
 RUN chmod +x /etc/service/apache/run
 RUN chmod +x /sbin/runit-wrapper
