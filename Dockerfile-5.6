@@ -21,8 +21,3 @@ RUN sed -i "s#{SERVER_ROOT}#${SERVER_ROOT}#g" /etc/apache2/httpd.conf
 VOLUME [ "/var/www/" ]
 WORKDIR /var/www
 
-#Xdebug enable or disable
-ARG XDEBUG
-RUN if [ ${XDEBUG} = true ]; then \
-pecl install xdebug-2.5.5 \
-;fi
