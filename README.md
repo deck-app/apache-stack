@@ -1,6 +1,6 @@
-# Docker Squash to reduce the size of the final Docker image for PHP + Apache
+# Docker image for PHP + Apache
 
-Carefully crafted Docker Squash to reduce the size of the final Docker image for PHP + Apache with PHP 7.3, PHP 7.2, PHP 7.1, PHP 7.0, Apache.
+Carefully crafted Docker image for PHP + Apache with PHP 8.0, PHP 7.4, PHP 5.6, Apache.
 
 * Fast and simple PHP extensions installation
 * Alpine base image with [PHP.earth PHP repositories](https://docs.php.earth/linux/alpine)
@@ -15,19 +15,18 @@ Carefully crafted Docker Squash to reduce the size of the final Docker image for
 
 The following list contains all current Docker tags and what is included in each.
 
+
 | System | Docker Tag | Features | Size |
 | ------ | ---------- | -------- | ---- |
-| **PHP 7.0.33**@Alpine 3.7.3 | [`7.0-apache`](https://github.com/phpearth/docker-php/tree/master/docker/7.0-apache.Dockerfile) | Apache 2.4.38 | [![](https://images.microbadger.com/badges/image/phpearth/php:7.0-apache.svg)](https://microbadger.com/images/phpearth/php:7.0-apache "Image size") |
-| **PHP 7.1.28**@Alpine 3.9.3 | [`7.1-apache`](https://github.com/phpearth/docker-php/tree/master/docker/7.1-apache.Dockerfile) | Apache 2.4.38 | [![](https://images.microbadger.com/badges/image/phpearth/php:7.1-apache.svg)](https://microbadger.com/images/phpearth/php:7.1-apache "Image size") |
-| **PHP 7.2.17**@Alpine 3.9.3 | [`7.2-apache`](https://github.com/phpearth/docker-php/tree/master/docker/7.2-apache.Dockerfile) | Apache 2.4.38 | [![](https://images.microbadger.com/badges/image/phpearth/php:7.2-apache.svg)](https://microbadger.com/images/phpearth/php:7.2-apache "Image size") |
-| **PHP 7.3.4**@Alpine 3.9.3 | [`7.3-apache`](https://github.com/phpearth/docker-php/tree/master/docker/7.3-apache.Dockerfile) | Apache 2.4.38 | [![](https://images.microbadger.com/badges/image/phpearth/php:7.3-apache.svg)](https://microbadger.com/images/phpearth/php:7.3-apache "Image size") |
-| **PHP 7.4.0alpha1**@Alpine 3.9.4 | [`7.4-apache`](https://github.com/phpearth/docker-php/tree/master/docker/7.4-apache.Dockerfile) | Apache 2.4.39 | [![](https://images.microbadger.com/badges/image/phpearth/php:7.4-apache.svg)](https://microbadger.com/images/phpearth/php:7.4-apache "Image size") |
+| **PHP 5.6.40**@Alpine 3.5 | [`5.6-apache`](https://github.com/deck-app/apache-stack1/blob/master/Dockerfile-5.6) | Apache 1.12.2, FPM |  |
+| **PHP 7.4.25**@Alpine 3.10 | [`7.4-apache`](https://github.com/deck-app/apache-stack1/blob/master/Dockerfile-7.4) | Apache 1.14.2, FPM | [![](https://images.microbadger.com/badges/image/phpearth/php:7.4-apache.svg)](https://microbadger.com/images/phpearth/php:7.4-apache "Image size") |
+| **PHP 8.0.12**@Alpine 3.12 | [`8.0-apache`](https://github.com/deck-app/apache-stack1/blob/master/Dockerfile-7.4) | Apache 1.14.2, FPM | [![](https://images.microbadger.com/badges/image/phpearth/php:7.4-apache.svg)](https://microbadger.com/images/phpearth/php:7.4-apache "Image size") |
 
 ## Quick usage
 
 ### Apache
 
-`Dockerfile` for running Nginx HTTP server with PHP FPM:
+`Dockerfile` for running Apache HTTP server with PHP FPM:
 
 ```Dockerfile
 FROM pull dockerstacks/apache2_php:v{PHP Version}
@@ -83,7 +82,7 @@ COPY php.ini $PHP_INI_DIR/conf.d/my-app.ini
 
 ### Docker Stack
 
-Docker Stack is way of orchestration of Docker services and simplifies running multiple services of your application. In this example we'll run an Nginx web server with PHP 7.3 FPM with `docker-compose.yml` file. In a new project directory create a `Dockerfile`:
+Docker Stack is way of orchestration of Docker services and simplifies running multiple services of your application. In this example we'll run an Apache web server with PHP 7.3 FPM with `docker-compose.yml` file. In a new project directory create a `Dockerfile`:
 
 ```Dockerfile
 FROM dockerstacks/apache2_php:v{PHP Version}
