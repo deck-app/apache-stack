@@ -7,7 +7,6 @@ LABEL maintainer Naba Das <hello@get-deck.com>
 
 COPY httpd.conf /etc/apache2/httpd.conf
 ARG SERVER_ROOT
-
 RUN sed -i "s#{SERVER_ROOT}#$SERVER_ROOT#g" /etc/apache2/httpd.conf
 
 VOLUME [ "/var/www/" ]
@@ -19,6 +18,13 @@ RUN if [ ${DISPLAY_PHPERROR} = true ]; then \
 sed -i "s#{DISPLAY}#On#g" /etc/php8/php.ini \
 ;else \
 sed -i "s#{DISPLAY}#Off#g" /etc/php8/php.ini \
+;fi
+
+ARG INSTALL_ADDITIONAL_EXTENSIONS
+RUN if [ -z "$INSTALL_ADDITIONAL_EXTENSIONS" ] ; then \
+echo "No additional PHP extensions added" \
+;else \
+apk add --no-cache ${INSTALL_ADDITIONAL_EXTENSIONS} \
 ;fi
 
 #Xdebug enable or disable
