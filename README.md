@@ -15,7 +15,7 @@ git clone https://github.com/deck-app/apache-stack/
 cd apache-stack
 ```
 
-Edit `.env` file to change any settings before installing like php, apache, mysql versions etc
+Edit `.env` file to change any settings before installing like php, apache versions etc
 
 ```
 docker-compose up -d
