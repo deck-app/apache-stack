@@ -1,0 +1,37 @@
+name: Docker Image CI
+
+on:
+  schedule:
+  - cron:  '30 5,17 * * *'
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image
+      run: docker-compose -f "docker-compose.yml" up -d --build
+    - name: PHP version check
+      run:  php -v
+    - name: Mongodb driver check
+      run:  php -m | grep mongo
+    - name: Mysql Driver check
+      run: php -m | grep mysqli
+    - name: Composer test
+      run: composer
+    - name: Index file downlaod in /var/www
+      run: docker-compose -f "docker-compose.yml" up -d --build && sudo wget -O /var/www/index.html https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html && sudo curl -I --http2 http://localhost:5564/ | grep HTTP
+      # run: docker-compose -f "docker-compose.yml" up -d --build curl http://localhost:5111/
+    # - name: Test
+      # run: curl -I --http2 http://localhost:5111/ | grep HTTP
+    - name: Laravel8 test
+      run:  composer create-project --prefer-dist laravel/laravel:^8.0
+    - name: Web site Test
+      run: curl -I http://localhost:5564/public/index.html | grep HTTP
