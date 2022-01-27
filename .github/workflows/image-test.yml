@@ -16,10 +16,12 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Docker image
+    - name: Build the Docker image apache 8.0
       run: docker-compose -f "docker-compose.yml" up -d --build
-    - name: PHP version check
-      run:  php -v
+      env:
+            PHP_VERSION: "8.0"
+            XDEBUG: true
+            DISPLAY_PHPERROR: true
     - name: Mongodb driver check
       run:  php -m | grep mongo
     - name: Mysql Driver check
@@ -27,9 +29,45 @@ jobs:
     - name: Composer test
       run: composer
     - name: Index file downlaod in /var/www and Web site Test
-      run: docker-compose -f "docker-compose.yml" up -d --build && sudo wget -O /var/www/index.html https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html && sudo curl -I --http2 http://localhost:5564/ | grep HTTP
+      run: sudo wget -O /var/www/index.html https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html && sudo curl -I --http2 http://localhost:5564/ | grep HTTP
       # run: docker-compose -f "docker-compose.yml" up -d --build curl http://localhost:5111/
     # - name: Test
       # run: curl -I --http2 http://localhost:5111/ | grep HTTP
     - name: Laravel8 test
       run:  composer create-project --prefer-dist laravel/laravel:^8.0
+    
+    - name: Build the Docker image apache 7.4
+      run: docker-compose -f "docker-compose.yml" up -d --build
+      env:
+            PHP_VERSION: "7.4"
+            XDEBUG: true
+            DISPLAY_PHPERROR: true
+    - name: Mongodb driver check
+      run:  php -m | grep mongo
+    - name: Mysql Driver check
+      run: php -m | grep mysqli
+    - name: Composer test
+      run: composer
+    - name: Index file downlaod in /var/www and Web site Test
+      run: sudo wget -O /var/www/index.html https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html && sudo curl -I --http2 http://localhost:5564/ | grep HTTP
+      # run: docker-compose -f "docker-compose.yml" up -d --build curl http://localhost:5111/
+    # - name: Test
+      # run: curl -I --http2 http://localhost:5111/ | grep HTTP
+    - name: Laravel8 test
+      run:  composer create-project --prefer-dist laravel/laravel:^8.0 laravel7
+
+    - name: Build the Docker image apache 5.6
+      run: docker-compose -f "docker-compose.yml" up -d --build
+      env:
+            PHP_VERSION: "5.6"
+            XDEBUG: true
+            DISPLAY_PHPERROR: true
+    - name: Mysql Driver check
+      run: php -m | grep mysqli
+    - name: Composer test
+      run: composer
+    - name: Index file downlaod in /var/www and Web site Test
+      run: sudo wget -O /var/www/index.html https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html && sudo curl -I --http2 http://localhost:5564/ | grep HTTP
+      # run: docker-compose -f "docker-compose.yml" up -d --build curl http://localhost:5111/
+    # - name: Test
+      # run: curl -I --http2 http://localhost:5111/ | grep HTTP
