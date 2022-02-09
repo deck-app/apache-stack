@@ -17,7 +17,8 @@ echo "No additional PHP extensions added" \
 ;else \
 apk add --no-cache ${INSTALL_ADDITIONAL_EXTENSIONS} \
 ;fi
-
+RUN apk update
+RUN apk add --no-cache wget
 RUN rm -Rf /var/www/*
 
 

@@ -70,6 +70,7 @@ jobs:
         docker-compose down
         echo "password" | sudo -S whoami
         sudo rm -rf /tmp/app/
+        echo "y" | docker image prune -a
         
 
   Apache-PHP7:
@@ -133,6 +134,7 @@ jobs:
         docker-compose down
         echo "password" | sudo -S whoami
         sudo rm -rf /tmp/app/
+        echo "y" | docker image prune -a
   
   Apache-PHP5: 
     runs-on: ubuntu-latest
@@ -187,4 +189,5 @@ jobs:
         docker-compose down
         echo "password" | sudo -S whoami
         sudo rm -rf /tmp/app/
+        echo "y" | docker image prune -a
   
