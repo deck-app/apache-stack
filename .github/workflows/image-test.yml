@@ -9,7 +9,7 @@ on:
     branches: [ master ]
 
 jobs:
-  Apache-PHP8:
+  Apache-PHP8-AMD64:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -33,8 +33,6 @@ jobs:
       run: |
         docker exec apache-stack_apache_1 wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
         sudo curl -I --http2 http://localhost:5564/
-    - name: Laravel8 test
-      run:  docker exec apache-stack_apache_1 composer create-project --prefer-dist laravel/laravel:^8.0
     - name: Destroy Container and file
       run:  |
         docker-compose down
@@ -64,8 +62,6 @@ jobs:
       run: |
         docker exec apachestack_apache_1 wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
         curl -i http://localhost:5564/
-    - name: Laravel8 test
-      run:  docker exec apachestack_apache_1 composer create-project --prefer-dist laravel/laravel:^8.0
     - name: Destroy Container 
       run: |
         docker-compose down
@@ -74,7 +70,7 @@ jobs:
         echo "y" | docker image prune -a
         
 
-  Apache-PHP7:
+  Apache-PHP7-AMD64:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -98,8 +94,6 @@ jobs:
       run: |
         docker exec apache-stack_apache_1 wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
         sudo curl -I --http2 http://localhost:5564/
-    - name: Laravel8 test
-      run:  docker exec apache-stack_apache_1 composer create-project --prefer-dist laravel/laravel:^8.0
     - name: Destroy Container and file
       run:  |
         docker-compose down
@@ -129,8 +123,6 @@ jobs:
       run: |
         docker exec apachestack_apache_1 wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
         curl -i http://localhost:5564/
-    - name: Laravel8 test
-      run:  docker exec apachestack_apache_1 composer create-project --prefer-dist laravel/laravel:^8.0
     - name: Destroy Container and file
       run:  |
         docker-compose down
@@ -138,7 +130,7 @@ jobs:
         sudo rm -rf /tmp/app/
         echo "y" | docker image prune -a
   
-  Apache-PHP5: 
+  Apache-PHP5-AMD64: 
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
