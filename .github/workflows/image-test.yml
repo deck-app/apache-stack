@@ -2,7 +2,7 @@ name: Apache Stack
 
 on:
   schedule:
-  - cron:  '30 5,17 * * *'
+  - cron:  '30 2,14 * * *'
   push:
     branches: [ master ]
   pull_request:
@@ -39,6 +39,7 @@ jobs:
       run:  |
         docker-compose down
         sudo rm -rf /tmp/app
+        echo "y" | docker image prune -a
   Apache-PHP8-ARM64:
     runs-on: self-hosted
     steps:
@@ -103,6 +104,7 @@ jobs:
       run:  |
         docker-compose down
         sudo rm -rf /tmp/app
+        echo "y" | docker image prune -a
   Apache-PHP7-ARM64:
     runs-on: self-hosted
     steps:
@@ -162,6 +164,7 @@ jobs:
       run:  |
         docker-compose down
         sudo rm -rf /tmp/app
+        echo "y" | docker image prune -a
   Apache-PHP5-ARM64: 
     runs-on: self-hosted
     steps:
