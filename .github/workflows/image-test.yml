@@ -27,6 +27,10 @@ jobs:
       run:  docker exec apache-stack_apache_1 php -m | grep mongo
     - name: Mysql Driver check
       run: docker exec apache-stack_apache_1 php -m | grep mysqli
+    - name: Git Version check
+      run:  docker exec apache-stack_apache_1 git --version
+    - name: Curl Version check
+      run:  docker exec apache-stack_apache_1 curl --version
     - name: Composer test
       run: docker exec apache-stack_apache_1 composer
     - name: Web site Test
@@ -56,6 +60,10 @@ jobs:
       run:  docker exec apache-stack-apache-1 php -m | grep mongo
     - name: Mysql Driver check
       run: docker exec apache-stack-apache-1 php -m | grep mysqli
+    - name: Git Version check
+      run: docker exec apache-stack-apache-1 git --version
+    - name: Curl Version check
+      run: docker exec apache-stack-apache-1 curl --version
     - name: Composer test
       run: docker exec apache-stack-apache-1 composer
     - name: Web site Test
@@ -89,6 +97,10 @@ jobs:
       run:  docker exec apache-stack_apache_1 php -m | grep mongo
     - name: Mysql Driver check
       run: docker exec apache-stack_apache_1 php -m | grep mysqli
+    - name: Git Version check
+      run:  docker exec apache-stack_apache_1 git --version
+    - name: Curl Version check
+      run:  docker exec apache-stack_apache_1 curl --version
     - name: Composer test
       run: docker exec apache-stack_apache_1 composer
     - name: Web site Test
@@ -118,6 +130,10 @@ jobs:
       run:  docker exec apache-stack-apache-1 php -m | grep mongo
     - name: Mysql Driver check
       run: docker exec apache-stack-apache-1 php -m | grep mysqli
+    - name: Git Version check
+      run: docker exec apache-stack-apache-1 git --version
+    - name: Curl Version check
+      run: docker exec apache-stack-apache-1 curl --version
     - name: Composer test
       run: docker exec apache-stack-apache-1 composer
     - name: Web site Test
@@ -148,6 +164,10 @@ jobs:
       run : docker exec apache-stack_apache_1 php -v
     - name: Mysql Driver check
       run: docker exec apache-stack_apache_1 php -m | grep mysqli
+    - name: Git Version check
+      run:  docker exec apache-stack_apache_1 git --version
+    - name: Curl Version check
+      run:  docker exec apache-stack_apache_1 curl --version
     - name: Composer test
       run: docker exec apache-stack_apache_1 composer
     - name: Web site Test
@@ -175,6 +195,10 @@ jobs:
       run : docker exec apache-stack-apache-1 php -v
     - name: Mysql Driver check
       run: docker exec apache-stack-apache-1 php -m | grep mysqli
+    - name: Git Version check
+      run: docker exec apache-stack-apache-1 git --version
+    - name: Curl Version check
+      run: docker exec apache-stack-apache-1 curl --version
     - name: Composer test
       run: docker exec apache-stack-apache-1 composer
     - name: Web site Test
