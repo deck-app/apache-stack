@@ -32,7 +32,7 @@ apk add --no-cache ${INSTALL_ADDITIONAL_EXTENSIONS} \
 ARG USER_ID
 ARG GROUP_ID
 RUN apk --no-cache add shadow
-RUN if [[ ${BACK_END} = nginx ]] ; then usermod -u ${USER_ID} nobody && groupmod -g ${GROUP_ID} nobody ; else usermod -u ${USER_ID} apache && groupmod -g ${GROUP_ID} apache ; fi
+RUN usermod -u ${USER_ID} apache && groupmod -g ${GROUP_ID} apache
 
 #Xdebug enable or disable
 ARG XDEBUG
