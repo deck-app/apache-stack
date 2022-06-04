@@ -21,6 +21,11 @@ RUN apk update
 RUN apk add --no-cache wget
 RUN rm -Rf /var/www/*
 
+## Linux permission issue
+ARG USER_ID
+ARG GROUP_ID
+RUN apk --no-cache add shadow
+RUN if [[ ${BACK_END} = nginx ]] ; then usermod -u ${USER_ID} nobody && groupmod -g ${GROUP_ID} nobody ; else usermod -u ${USER_ID} apache && groupmod -g ${GROUP_ID} apache ; fi
 
 COPY httpd.conf /etc/apache2/httpd.conf
 ARG SERVER_ROOT

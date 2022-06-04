@@ -28,6 +28,12 @@ echo "No additional PHP extensions added" \
 apk add --no-cache ${INSTALL_ADDITIONAL_EXTENSIONS} \
 ;fi
 
+## Linux permission issue
+ARG USER_ID
+ARG GROUP_ID
+RUN apk --no-cache add shadow
+RUN if [[ ${BACK_END} = nginx ]] ; then usermod -u ${USER_ID} nobody && groupmod -g ${GROUP_ID} nobody ; else usermod -u ${USER_ID} apache && groupmod -g ${GROUP_ID} apache ; fi
+
 #Xdebug enable or disable
 ARG XDEBUG
 RUN if [ ${XDEBUG} = true ]; then \
