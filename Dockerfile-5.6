@@ -27,16 +27,20 @@ ARG GROUP_ID
 RUN apk --no-cache add shadow sudo
 RUN usermod -u ${USER_ID} apache && groupmod -g ${GROUP_ID} apache
 
-COPY login.sh /root/.bashrc
-RUN echo "#!/bin/sh \
-         source ~/.profile \
-         source ~/.bashrc" >> /root/.bash_profile
-
 # sudo command without password
 RUN echo "apache ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
 COPY httpd.conf /etc/apache2/httpd.conf
 ARG SERVER_ROOT
 RUN sed -i "s#{SERVER_ROOT}#${SERVER_ROOT}#g" /etc/apache2/httpd.conf
-
 WORKDIR /var/www
+
+## apache2 permission issue
+RUN chown -R apache:apache /run/apache2
+RUN chown -R apache:apache /usr/sbin/httpd
+RUN chown -R apache:apache /etc/apache2
+RUN chown -R apache:apache /usr/lib/apache2
+RUN chown -R apache:apache /etc/init.d/
+RUN chown -R apache:apache /usr/sbin/apachectl
+RUN chown -R apache:apache /var/log/apache2
+USER apache
