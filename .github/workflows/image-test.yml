@@ -9,6 +9,83 @@ on:
     branches: [ master ]
 
 jobs:
+  Apache-PHP82-AMD64:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image Apache php 8.2
+      run: docker-compose -f "docker-compose.yml" up -d --build
+      env:
+          PHP_VERSION: "8.2"
+          XDEBUG: true
+          DISPLAY_PHPERROR: true
+          SERVER_ROOT:  /var/www/
+          APP_CODE_PATH_HOST: /tmp/apache
+    - name: PHP version check
+      run : docker exec apache-stack_apache_1 php -v
+    - name: Mongodb driver check
+      run:  docker exec apache-stack_apache_1 php -m | grep mongo
+    - name: Mysql Driver check
+      run: docker exec apache-stack_apache_1 php -m | grep mysqli
+    - name: Git Version check
+      run:  docker exec apache-stack_apache_1 git --version
+    - name: Curl Version check
+      run:  docker exec apache-stack_apache_1 curl --version
+    - name: Composer test
+      run: docker exec apache-stack_apache_1 composer
+    - name: Web site Test
+      run: |
+        docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
+        while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
+        do 
+          sleep 10s
+        done
+        sudo curl -I --http2 http://localhost:5564/
+    - name: Destroy Container and file
+      run:  |
+        docker-compose down
+        sudo rm -rf /tmp/apache
+        echo "y" | docker image prune -a
+  Apache-PHP82-ARM64:
+    runs-on: self-hosted
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Docker image Apache php 8.2
+      run: docker-compose -f "docker-compose.yml" up -d --build
+      env:
+          PHP_VERSION: "8.2"
+          XDEBUG: true
+          DISPLAY_PHPERROR: true
+          SERVER_ROOT:  /var/www/
+          APP_CODE_PATH_HOST: /tmp/apache
+    - name: PHP version check
+      run : docker exec apache-stack_apache_1 php -v
+    - name: Mongodb driver check
+      run:  docker exec apache-stack_apache_1 php -m
+    - name: Mysql Driver check
+      run: docker exec apache-stack_apache_1 php -m | grep mysqli
+    - name: Git Version check
+      run: docker exec apache-stack_apache_1 git --version
+    - name: Curl Version check
+      run: docker exec apache-stack_apache_1 curl --version
+    - name: Composer test
+      run: docker exec apache-stack_apache_1 composer
+    - name: Web site Test
+      run: |
+        docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
+        while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
+        do 
+          sleep 10s
+        done
+        curl -i http://localhost:5564/
+    - name: Destroy Container 
+      run: |
+        docker-compose down
+        echo "y" | docker system prune -a
+        echo "password" | sudo -S whoami
+        sudo rm -rf /tmp/apache/
+
+
   Apache-PHP81-AMD64:
     runs-on: ubuntu-latest
     steps:

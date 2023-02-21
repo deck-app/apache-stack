@@ -48,3 +48,10 @@ jobs:
           PHP_VERSION: "8.1"
           XDEBUG: true
           DISPLAY_PHPERROR: true
+    
+    - name: Build the Docker image with php8.2
+      run: docker-compose build
+      env:
+          PHP_VERSION: "8.2"
+          XDEBUG: true
+          DISPLAY_PHPERROR: true
