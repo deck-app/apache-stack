@@ -20,6 +20,22 @@ jobs:
           PHP_VERSION: "5.6"
           XDEBUG: true
           DISPLAY_PHPERROR: true
+    
+
+    - name: Build the Docker image with php7.1
+      run: docker-compose build
+      env:
+          PHP_VERSION: "7.1"
+          XDEBUG: true
+          DISPLAY_PHPERROR: true
+    
+
+    - name: Build the Docker image with php7.2
+      run: docker-compose build
+      env:
+          PHP_VERSION: "7.2"
+          XDEBUG: true
+          DISPLAY_PHPERROR: true
 
     - name: Build the Docker image with php7.3
       run: docker-compose build
