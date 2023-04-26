@@ -5,18 +5,15 @@ LABEL maintainer Naba Das <hello@get-deck.com>
 
 COPY php_ini/php.ini /etc/php5/php.ini
 ARG DISPLAY_PHPERROR
+ENV PHP_VERSION=5
 RUN if [ ${DISPLAY_PHPERROR} = true ]; then \
-sed -i "s#{DISPLAY}#On#g" /etc/php5/php.ini \
+sed -i "s#{DISPLAY}#On#g" /etc/php${PHP_VERSION}/php.ini \
 ;else \
-sed -i "s#{DISPLAY}#Off#g" /etc/php5/php.ini \
+sed -i "s#{DISPLAY}#Off#g" /etc/php${PHP_VERSION}/php.ini \
 ;fi
 
-ARG INSTALL_ADDITIONAL_EXTENSIONS
-RUN if [ -z "$INSTALL_ADDITIONAL_EXTENSIONS" ] ; then \
-echo "No additional PHP extensions added" \
-;else \
-apk add --no-cache ${INSTALL_ADDITIONAL_EXTENSIONS} \
-;fi
+ADD package.sh /package.sh
+
 RUN apk update
 RUN apk add --no-cache wget
 RUN rm -Rf /var/www/*
@@ -44,3 +41,10 @@ RUN chown -R apache:apache /etc/init.d/
 RUN chown -R apache:apache /usr/sbin/apachectl
 RUN chown -R apache:apache /var/log/apache2
 USER apache
+ARG INSTALL_ADDITIONAL_EXTENSIONS
+ENV INSTALL_ADDITIONAL_EXTENSIONS=$INSTALL_ADDITIONAL_EXTENSIONS
+RUN if [ -z "$INSTALL_ADDITIONAL_EXTENSIONS" ] ; then \
+echo "No additional PHP extensions added" \
+;else \
+bash /package.sh \
+;fi
