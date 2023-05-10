@@ -2,15 +2,20 @@ name: Apache Stack
 
 on:
   schedule:
-  - cron:  '31 23 * * *'
+  - cron:  '00 21 * * *'
   push:
     branches: [ master ]
   pull_request:
     branches: [ master ]
 
 jobs:
-  Apache-PHP82-AMD64:
-    runs-on: ubuntu-latest
+  Apache-PHP82:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, self-hosted]
+    runs-on: ${{ matrix.os }}
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image Apache php 8.2
@@ -46,48 +51,60 @@ jobs:
         docker-compose down
         sudo rm -rf /tmp/apache
         echo "y" | docker image prune -a
-  Apache-PHP82-ARM64:
-    runs-on: self-hosted
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image Apache php 8.2
-      run: docker-compose -f "docker-compose.yml" up -d --build
-      env:
-          PHP_VERSION: "8.2"
-          XDEBUG: true
-          DISPLAY_PHPERROR: true
-          SERVER_ROOT:  /var/www/
-          APP_CODE_PATH_HOST: /tmp/apache
-    - name: PHP version check
-      run : docker exec apache-stack_apache_1 php -v
-    - name: Mongodb driver check
-      run:  docker exec apache-stack_apache_1 php -m
-    - name: Mysql Driver check
-      run: docker exec apache-stack_apache_1 php -m | grep mysqli
-    - name: Git Version check
-      run: docker exec apache-stack_apache_1 git --version
-    - name: Curl Version check
-      run: docker exec apache-stack_apache_1 curl --version
-    - name: Composer test
-      run: docker exec apache-stack_apache_1 composer
-    - name: Web site Test
-      run: |
-        docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
-        while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
-        do 
-          sleep 10s
-        done
-        curl -i http://localhost:5564/
-    - name: Destroy Container 
-      run: |
-        docker-compose down
-        echo "y" | docker system prune -a
-        echo "password" | sudo -S whoami
-        sudo rm -rf /tmp/apache/
+    - name: Slack Notification
+      uses: 8398a7/action-slack@v3
+      with: 
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        channel: '#github_action_status'
+      if: always()
+  # Apache-PHP82-ARM64:
+  #   runs-on: self-hosted
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Build the Docker image Apache php 8.2
+  #     run: docker-compose -f "docker-compose.yml" up -d --build
+  #     env:
+  #         PHP_VERSION: "8.2"
+  #         XDEBUG: true
+  #         DISPLAY_PHPERROR: true
+  #         SERVER_ROOT:  /var/www/
+  #         APP_CODE_PATH_HOST: /tmp/apache
+  #   - name: PHP version check
+  #     run : docker exec apache-stack_apache_1 php -v
+  #   - name: Mongodb driver check
+  #     run:  docker exec apache-stack_apache_1 php -m
+  #   - name: Mysql Driver check
+  #     run: docker exec apache-stack_apache_1 php -m | grep mysqli
+  #   - name: Git Version check
+  #     run: docker exec apache-stack_apache_1 git --version
+  #   - name: Curl Version check
+  #     run: docker exec apache-stack_apache_1 curl --version
+  #   - name: Composer test
+  #     run: docker exec apache-stack_apache_1 composer
+  #   - name: Web site Test
+  #     run: |
+  #       docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
+  #       while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
+  #       do 
+  #         sleep 10s
+  #       done
+  #       curl -i http://localhost:5564/
+  #   - name: Destroy Container 
+  #     run: |
+  #       docker-compose down
+  #       echo "y" | docker system prune -a
+  #       echo "password" | sudo -S whoami
+  #       sudo rm -rf /tmp/apache/
 
 
-  Apache-PHP81-AMD64:
-    runs-on: ubuntu-latest
+  Apache-PHP81:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, self-hosted]
+    runs-on: ${{ matrix.os }}
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image Apache php 8.1
@@ -119,51 +136,64 @@ jobs:
         done
         sudo curl -I --http2 http://localhost:5564/
     - name: Destroy Container and file
-      run:  |
-        docker-compose down
-        sudo rm -rf /tmp/apache
-        echo "y" | docker image prune -a
-  Apache-PHP81-ARM64:
-    runs-on: self-hosted
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image Apache php 8.1
-      run: docker-compose -f "docker-compose.yml" up -d --build
-      env:
-          PHP_VERSION: "8.1"
-          XDEBUG: true
-          DISPLAY_PHPERROR: true
-          SERVER_ROOT:  /var/www/
-          APP_CODE_PATH_HOST: /tmp/apache
-    - name: PHP version check
-      run : docker exec apache-stack_apache_1 php -v
-    - name: Mongodb driver check
-      run:  docker exec apache-stack_apache_1 php -m
-    - name: Mysql Driver check
-      run: docker exec apache-stack_apache_1 php -m | grep mysqli
-    - name: Git Version check
-      run: docker exec apache-stack_apache_1 git --version
-    - name: Curl Version check
-      run: docker exec apache-stack_apache_1 curl --version
-    - name: Composer test
-      run: docker exec apache-stack_apache_1 composer
-    - name: Web site Test
       run: |
-        docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
-        while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
-        do 
-          sleep 10s
-        done
-        curl -i http://localhost:5564/
-    - name: Destroy Container 
-      run: |
-        docker-compose down
-        echo "y" | docker system prune -a
-        echo "password" | sudo -S whoami
-        sudo rm -rf /tmp/apache/
+          docker-compose down
+          echo "y" | docker system prune -a
+          echo "password" | sudo -S whoami
+          sudo rm -rf /tmp/apache/
+    - name: Slack Notification
+      uses: 8398a7/action-slack@v3
+      with: 
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        channel: '#github_action_status'
+      if: always()
+  # Apache-PHP81-ARM64:
+  #   runs-on: self-hosted
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Build the Docker image Apache php 8.1
+  #     run: docker-compose -f "docker-compose.yml" up -d --build
+  #     env:
+  #         PHP_VERSION: "8.1"
+  #         XDEBUG: true
+  #         DISPLAY_PHPERROR: true
+  #         SERVER_ROOT:  /var/www/
+  #         APP_CODE_PATH_HOST: /tmp/apache
+  #   - name: PHP version check
+  #     run : docker exec apache-stack_apache_1 php -v
+  #   - name: Mongodb driver check
+  #     run:  docker exec apache-stack_apache_1 php -m
+  #   - name: Mysql Driver check
+  #     run: docker exec apache-stack_apache_1 php -m | grep mysqli
+  #   - name: Git Version check
+  #     run: docker exec apache-stack_apache_1 git --version
+  #   - name: Curl Version check
+  #     run: docker exec apache-stack_apache_1 curl --version
+  #   - name: Composer test
+  #     run: docker exec apache-stack_apache_1 composer
+  #   - name: Web site Test
+  #     run: |
+  #       docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
+  #       while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
+  #       do 
+  #         sleep 10s
+  #       done
+  #       curl -i http://localhost:5564/
+  #   - name: Destroy Container 
+  #     run: |
+  #       docker-compose down
+  #       echo "y" | docker system prune -a
+  #       echo "password" | sudo -S whoami
+  #       sudo rm -rf /tmp/apache/
 
-  Apache-PHP8-AMD64:
-    runs-on: ubuntu-latest
+  Apache-PHP80:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, self-hosted]
+    runs-on: ${{ matrix.os }}
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image Apache php 8.0
@@ -195,51 +225,64 @@ jobs:
         done
         sudo curl -I --http2 http://localhost:5564/
     - name: Destroy Container and file
-      run:  |
-        docker-compose down
-        sudo rm -rf /tmp/apache
-        echo "y" | docker image prune -a
-  Apache-PHP8-ARM64:
-    runs-on: self-hosted
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image Apache php 8.0
-      run: docker-compose -f "docker-compose.yml" up -d --build
-      env:
-          PHP_VERSION: "8.0"
-          XDEBUG: true
-          DISPLAY_PHPERROR: true
-          SERVER_ROOT:  /var/www/
-          APP_CODE_PATH_HOST: /tmp/apache
-    - name: PHP version check
-      run : docker exec apache-stack_apache_1 php -v
-    - name: Mongodb driver check
-      run:  docker exec apache-stack_apache_1 php -m | grep mongo
-    - name: Mysql Driver check
-      run: docker exec apache-stack_apache_1 php -m | grep mysqli
-    - name: Git Version check
-      run: docker exec apache-stack_apache_1 git --version
-    - name: Curl Version check
-      run: docker exec apache-stack_apache_1 curl --version
-    - name: Composer test
-      run: docker exec apache-stack_apache_1 composer
-    - name: Web site Test
       run: |
-        docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
-        while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
-        do 
-          sleep 10s
-        done
-        curl -i http://localhost:5564/
-    - name: Destroy Container 
-      run: |
-        docker-compose down
-        echo "y" | docker system prune -a
-        echo "password" | sudo -S whoami
-        sudo rm -rf /tmp/apache/        
+          docker-compose down
+          echo "y" | docker system prune -a
+          echo "password" | sudo -S whoami
+          sudo rm -rf /tmp/apache/
+    - name: Slack Notification
+      uses: 8398a7/action-slack@v3
+      with: 
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        channel: '#github_action_status'
+      if: always()
+  # Apache-PHP8-ARM64:
+  #   runs-on: self-hosted
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Build the Docker image Apache php 8.0
+  #     run: docker-compose -f "docker-compose.yml" up -d --build
+  #     env:
+  #         PHP_VERSION: "8.0"
+  #         XDEBUG: true
+  #         DISPLAY_PHPERROR: true
+  #         SERVER_ROOT:  /var/www/
+  #         APP_CODE_PATH_HOST: /tmp/apache
+  #   - name: PHP version check
+  #     run : docker exec apache-stack_apache_1 php -v
+  #   - name: Mongodb driver check
+  #     run:  docker exec apache-stack_apache_1 php -m | grep mongo
+  #   - name: Mysql Driver check
+  #     run: docker exec apache-stack_apache_1 php -m | grep mysqli
+  #   - name: Git Version check
+  #     run: docker exec apache-stack_apache_1 git --version
+  #   - name: Curl Version check
+  #     run: docker exec apache-stack_apache_1 curl --version
+  #   - name: Composer test
+  #     run: docker exec apache-stack_apache_1 composer
+  #   - name: Web site Test
+  #     run: |
+  #       docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
+  #       while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
+  #       do 
+  #         sleep 10s
+  #       done
+  #       curl -i http://localhost:5564/
+  #   - name: Destroy Container 
+  #     run: |
+  #       docker-compose down
+  #       echo "y" | docker system prune -a
+  #       echo "password" | sudo -S whoami
+  #       sudo rm -rf /tmp/apache/        
 
-  Apache-PHP7-AMD64:
-    runs-on: ubuntu-latest
+  Apache-PHP74:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, self-hosted]
+    runs-on: ${{ matrix.os }}
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image Apache php 7.4
@@ -271,51 +314,64 @@ jobs:
         done
         sudo curl -I --http2 http://localhost:5564/
     - name: Destroy Container and file
-      run:  |
-        docker-compose down
-        sudo rm -rf /tmp/apache
-        echo "y" | docker image prune -a
-  Apache-PHP7-ARM64:
-    runs-on: self-hosted
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image Apache php 7.4
-      run: docker-compose -f "docker-compose.yml" up -d --build
-      env:
-          PHP_VERSION: "7.4"
-          XDEBUG: true
-          DISPLAY_PHPERROR: true
-          SERVER_ROOT:  /var/www/
-          APP_CODE_PATH_HOST: /tmp/apache
-    - name: PHP version check
-      run : docker exec apache-stack_apache_1 php -v
-    - name: Mongodb driver check
-      run:  docker exec apache-stack_apache_1 php -m | grep mongo
-    - name: Mysql Driver check
-      run: docker exec apache-stack_apache_1 php -m | grep mysqli
-    - name: Git Version check
-      run: docker exec apache-stack_apache_1 git --version
-    - name: Curl Version check
-      run: docker exec apache-stack_apache_1 curl --version
-    - name: Composer test
-      run: docker exec apache-stack_apache_1 composer
-    - name: Web site Test
       run: |
-        docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
-        while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
-        do 
-          sleep 10s
-        done
-        curl -i http://localhost:5564/
-    - name: Destroy Container and file
-      run:  |
-        docker-compose down
-        echo "y" | docker system prune -a
-        echo "password" | sudo -S whoami
-        sudo rm -rf /tmp/apache/
+          docker-compose down
+          echo "y" | docker system prune -a
+          echo "password" | sudo -S whoami
+          sudo rm -rf /tmp/apache/
+    - name: Slack Notification
+      uses: 8398a7/action-slack@v3
+      with: 
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        channel: '#github_action_status'
+      if: always()
+  # Apache-PHP7-ARM64:
+  #   runs-on: self-hosted
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Build the Docker image Apache php 7.4
+  #     run: docker-compose -f "docker-compose.yml" up -d --build
+  #     env:
+  #         PHP_VERSION: "7.4"
+  #         XDEBUG: true
+  #         DISPLAY_PHPERROR: true
+  #         SERVER_ROOT:  /var/www/
+  #         APP_CODE_PATH_HOST: /tmp/apache
+  #   - name: PHP version check
+  #     run : docker exec apache-stack_apache_1 php -v
+  #   - name: Mongodb driver check
+  #     run:  docker exec apache-stack_apache_1 php -m | grep mongo
+  #   - name: Mysql Driver check
+  #     run: docker exec apache-stack_apache_1 php -m | grep mysqli
+  #   - name: Git Version check
+  #     run: docker exec apache-stack_apache_1 git --version
+  #   - name: Curl Version check
+  #     run: docker exec apache-stack_apache_1 curl --version
+  #   - name: Composer test
+  #     run: docker exec apache-stack_apache_1 composer
+  #   - name: Web site Test
+  #     run: |
+  #       docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
+  #       while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
+  #       do 
+  #         sleep 10s
+  #       done
+  #       curl -i http://localhost:5564/
+  #   - name: Destroy Container and file
+  #     run:  |
+  #       docker-compose down
+  #       echo "y" | docker system prune -a
+  #       echo "password" | sudo -S whoami
+  #       sudo rm -rf /tmp/apache/
   
-  Apache-PHP72-AMD64:
-    runs-on: ubuntu-latest
+  Apache-PHP72:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, self-hosted]
+    runs-on: ${{ matrix.os }}
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image Apache php 7.2
@@ -347,51 +403,64 @@ jobs:
         done
         sudo curl -I --http2 http://localhost:5564/
     - name: Destroy Container and file
-      run:  |
-        docker-compose down
-        sudo rm -rf /tmp/apache
-        echo "y" | docker image prune -a
-  Apache-PHP72-ARM64:
-    runs-on: self-hosted
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image Apache php 7.2
-      run: docker-compose -f "docker-compose.yml" up -d --build
-      env:
-          PHP_VERSION: "7.2"
-          XDEBUG: true
-          DISPLAY_PHPERROR: true
-          SERVER_ROOT:  /var/www/
-          APP_CODE_PATH_HOST: /tmp/apache
-    - name: PHP version check
-      run : docker exec apache-stack_apache_1 php -v
-    - name: Mongodb driver check
-      run:  docker exec apache-stack_apache_1 php -m | grep mongo
-    - name: Mysql Driver check
-      run: docker exec apache-stack_apache_1 php -m | grep mysqli
-    - name: Git Version check
-      run: docker exec apache-stack_apache_1 git --version
-    - name: Curl Version check
-      run: docker exec apache-stack_apache_1 curl --version
-    - name: Composer test
-      run: docker exec apache-stack_apache_1 composer
-    - name: Web site Test
       run: |
-        docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
-        while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
-        do 
-          sleep 10s
-        done
-        curl -i http://localhost:5564/
-    - name: Destroy Container and file
-      run:  |
-        docker-compose down
-        echo "y" | docker system prune -a
-        echo "password" | sudo -S whoami
-        sudo rm -rf /tmp/apache/
+          docker-compose down
+          echo "y" | docker system prune -a
+          echo "password" | sudo -S whoami
+          sudo rm -rf /tmp/apache/
+    - name: Slack Notification
+      uses: 8398a7/action-slack@v3
+      with: 
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        channel: '#github_action_status'
+      if: always()
+  # Apache-PHP72-ARM64:
+  #   runs-on: self-hosted
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Build the Docker image Apache php 7.2
+  #     run: docker-compose -f "docker-compose.yml" up -d --build
+  #     env:
+  #         PHP_VERSION: "7.2"
+  #         XDEBUG: true
+  #         DISPLAY_PHPERROR: true
+  #         SERVER_ROOT:  /var/www/
+  #         APP_CODE_PATH_HOST: /tmp/apache
+  #   - name: PHP version check
+  #     run : docker exec apache-stack_apache_1 php -v
+  #   - name: Mongodb driver check
+  #     run:  docker exec apache-stack_apache_1 php -m | grep mongo
+  #   - name: Mysql Driver check
+  #     run: docker exec apache-stack_apache_1 php -m | grep mysqli
+  #   - name: Git Version check
+  #     run: docker exec apache-stack_apache_1 git --version
+  #   - name: Curl Version check
+  #     run: docker exec apache-stack_apache_1 curl --version
+  #   - name: Composer test
+  #     run: docker exec apache-stack_apache_1 composer
+  #   - name: Web site Test
+  #     run: |
+  #       docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
+  #       while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
+  #       do 
+  #         sleep 10s
+  #       done
+  #       curl -i http://localhost:5564/
+  #   - name: Destroy Container and file
+  #     run:  |
+  #       docker-compose down
+  #       echo "y" | docker system prune -a
+  #       echo "password" | sudo -S whoami
+  #       sudo rm -rf /tmp/apache/
   
-  Apache-PHP71-AMD64:
-    runs-on: ubuntu-latest
+  Apache-PHP71:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, self-hosted]
+    runs-on: ${{ matrix.os }}
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image Apache php 7.1
@@ -421,50 +490,63 @@ jobs:
         done
         sudo curl -I --http2 http://localhost:5564/
     - name: Destroy Container and file
-      run:  |
-        docker-compose down
-        sudo rm -rf /tmp/apache
-        echo "y" | docker image prune -a
-  Apache-PHP71-ARM64:
-    runs-on: self-hosted
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image Apache php 7.1
-      run: docker-compose -f "docker-compose.yml" up -d --build
-      env:
-          PHP_VERSION: "7.1"
-          XDEBUG: true
-          DISPLAY_PHPERROR: true
-          SERVER_ROOT:  /var/www/
-          APP_CODE_PATH_HOST: /tmp/apache
-    - name: PHP version check
-      run : docker exec apache-stack_apache_1 php -v
-    - name: Mysql Driver check
-      run: docker exec apache-stack_apache_1 php -m | grep mysqli
-    - name: Git Version check
-      run: docker exec apache-stack_apache_1 git --version
-    - name: Curl Version check
-      run: docker exec apache-stack_apache_1 curl --version
-    - name: Composer test
-      run: docker exec apache-stack_apache_1 composer
-    - name: Web site Test
       run: |
-        docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
-        while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
-        do 
-          sleep 10s
-        done
-        curl -i http://localhost:5564/
-    - name: Destroy Container and file
-      run:  |
-        docker-compose down
-        echo "y" | docker system prune -a
-        echo "password" | sudo -S whoami
-        sudo rm -rf /tmp/apache/
+          docker-compose down
+          echo "y" | docker system prune -a
+          echo "password" | sudo -S whoami
+          sudo rm -rf /tmp/apache/
+    - name: Slack Notification
+      uses: 8398a7/action-slack@v3
+      with: 
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        channel: '#github_action_status'
+      if: always()
+  # Apache-PHP71-ARM64:
+  #   runs-on: self-hosted
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Build the Docker image Apache php 7.1
+  #     run: docker-compose -f "docker-compose.yml" up -d --build
+  #     env:
+  #         PHP_VERSION: "7.1"
+  #         XDEBUG: true
+  #         DISPLAY_PHPERROR: true
+  #         SERVER_ROOT:  /var/www/
+  #         APP_CODE_PATH_HOST: /tmp/apache
+  #   - name: PHP version check
+  #     run : docker exec apache-stack_apache_1 php -v
+  #   - name: Mysql Driver check
+  #     run: docker exec apache-stack_apache_1 php -m | grep mysqli
+  #   - name: Git Version check
+  #     run: docker exec apache-stack_apache_1 git --version
+  #   - name: Curl Version check
+  #     run: docker exec apache-stack_apache_1 curl --version
+  #   - name: Composer test
+  #     run: docker exec apache-stack_apache_1 composer
+  #   - name: Web site Test
+  #     run: |
+  #       docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
+  #       while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
+  #       do 
+  #         sleep 10s
+  #       done
+  #       curl -i http://localhost:5564/
+  #   - name: Destroy Container and file
+  #     run:  |
+  #       docker-compose down
+  #       echo "y" | docker system prune -a
+  #       echo "password" | sudo -S whoami
+  #       sudo rm -rf /tmp/apache/
         
   
-  Apache-PHP5-AMD64: 
-    runs-on: ubuntu-latest
+  Apache-PHP5: 
+    strategy:
+      matrix:
+        os: [ubuntu-latest, self-hosted]
+    runs-on: ${{ matrix.os }}
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     steps:
     - uses: actions/checkout@v2
     - name: Build the Docker image Apache php 5.6
@@ -494,45 +576,53 @@ jobs:
         done
         sudo curl -I --http2 http://localhost:5564/
     - name: Destroy Container and file
-      run:  |
-        docker-compose down
-        sudo rm -rf /tmp/apache
-        echo "y" | docker image prune -a
-  Apache-PHP5-ARM64: 
-    runs-on: self-hosted
-    steps:
-    - uses: actions/checkout@v2
-    - name: Build the Docker image Apache php 5.6
-      run: docker-compose -f "docker-compose.yml" up -d --build
-      env:
-          PHP_VERSION: "5.6"
-          XDEBUG: true
-          DISPLAY_PHPERROR: true
-          SERVER_ROOT:  /var/www/
-          APP_CODE_PATH_HOST: /tmp/apache
-    - name: PHP version check
-      run : docker exec apache-stack_apache_1 php -v
-    - name: Mysql Driver check
-      run: docker exec apache-stack_apache_1 php -m | grep mysqli
-    - name: Git Version check
-      run: docker exec apache-stack_apache_1 git --version
-    - name: Curl Version check
-      run: docker exec apache-stack_apache_1 curl --version
-    - name: Composer test
-      run: docker exec apache-stack_apache_1 composer
-    - name: Web site Test
       run: |
-        docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
-        while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
-        do 
-          sleep 10s
-        done
-        curl -i http://localhost:5564/
-    - name: Destroy Container and file
-      run:  |
-        docker-compose down
-        echo "y" | docker system prune -a
-        echo "password" | sudo -S whoami
-        sudo rm -rf /tmp/apache/
+          docker-compose down
+          echo "y" | docker system prune -a
+          echo "password" | sudo -S whoami
+          sudo rm -rf /tmp/apache/
+    - name: Slack Notification
+      uses: 8398a7/action-slack@v3
+      with: 
+        status: ${{ job.status }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        channel: '#github_action_status'
+      if: always()
+  # Apache-PHP5-ARM64: 
+  #   runs-on: self-hosted
+  #   steps:
+  #   - uses: actions/checkout@v2
+  #   - name: Build the Docker image Apache php 5.6
+  #     run: docker-compose -f "docker-compose.yml" up -d --build
+  #     env:
+  #         PHP_VERSION: "5.6"
+  #         XDEBUG: true
+  #         DISPLAY_PHPERROR: true
+  #         SERVER_ROOT:  /var/www/
+  #         APP_CODE_PATH_HOST: /tmp/apache
+  #   - name: PHP version check
+  #     run : docker exec apache-stack_apache_1 php -v
+  #   - name: Mysql Driver check
+  #     run: docker exec apache-stack_apache_1 php -m | grep mysqli
+  #   - name: Git Version check
+  #     run: docker exec apache-stack_apache_1 git --version
+  #   - name: Curl Version check
+  #     run: docker exec apache-stack_apache_1 curl --version
+  #   - name: Composer test
+  #     run: docker exec apache-stack_apache_1 composer
+  #   - name: Web site Test
+  #     run: |
+  #       docker exec apache-stack_apache_1 sudo wget -O /var/www/index.php https://raw.githubusercontent.com/deck-app/stack-preview-screen/main/install/index.html
+  #       while [[ "$(curl -s -o /dev/null -w ''%{http_code}'' http://localhost:5564/index.php)" != "200" ]]; 
+  #       do 
+  #         sleep 10s
+  #       done
+  #       curl -i http://localhost:5564/
+  #   - name: Destroy Container and file
+  #     run:  |
+  #       docker-compose down
+  #       echo "y" | docker system prune -a
+  #       echo "password" | sudo -S whoami
+  #       sudo rm -rf /tmp/apache/
         
   
